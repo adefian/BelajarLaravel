@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Http\Requests\UsersRequest;
 use App\User;
 use App\Role;
 
@@ -28,7 +29,8 @@ class AdminUsersController extends Controller
      */
     public function create()
     {
-        $roles = Role::all();
+        
+        $roles = Role::pluck('name','id')->all();
         return view('admin.users.create',compact('roles'));
     }
 
@@ -38,9 +40,16 @@ class AdminUsersController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UsersRequest $request)
     {
-        //
+        
+        $input = $request -> all();
+
+        $input['password'] = bcrypt($request->password);
+        
+        User::create($input);
+        
+        return redirect('/admin/users');
     }
 
     /**
