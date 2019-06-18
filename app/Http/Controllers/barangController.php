@@ -2,14 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\barangRequest;
+use App\Http\Requests\barangeditRequest;
 use Illuminate\Http\Request;
-use App\Http\Requests\UsersRequest;
-use App\Http\Requests\UsersEditRequest;
-use App\Photo;
-use App\User;
-use App\Role;
+use App\Photobarang;
+use App\Barang;
 
-class AdminUsersController extends Controller
+class barangController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -18,10 +17,8 @@ class AdminUsersController extends Controller
      */
     public function index()
     {
-
-        $users = User::all();
-
-        return view('admin.users.index',compact('users'));
+        $barangs = Barang::all();
+        return view ('admin.barang.index', compact('barangs'));
     }
 
     /**
@@ -31,40 +28,35 @@ class AdminUsersController extends Controller
      */
     public function create()
     {
-        
-        $roles = Role::pluck('name','id')->all();
-        return view('admin.users.create',compact('roles'));
+        return view ('admin.barang.create');
     }
-    
+
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(UsersRequest $request)
+    public function store(barangRequest $request)
     {
-        
-        //$input = $request -> all();
-
         $input = $request->all();
 
         if ($file = $request->file('photo_id')) {
             
             $name = time() . $file->getClientOriginalName();
 
-            $file->move('images/', $name);  
+            $file->move('imagesbarang/', $name);  
 
-            $photo = Photo::create(['file'=>$name]);
+            $photo = Photobarang::create(['file'=>$name]);
 
             $input['photo_id'] = $photo->id;
         }
 
         $input['password'] = bcrypt($request->password);
 
-        User::create($input);
+        Barang::create($input);
 
-        return redirect('/admin/users');
+        return redirect('/admin/barangs');
     }
 
     /**
@@ -75,7 +67,7 @@ class AdminUsersController extends Controller
      */
     public function show($id)
     {
-        return view ('admin.users.show');
+        return view ('admin.barang.show');
     }
 
     /**
@@ -86,10 +78,8 @@ class AdminUsersController extends Controller
      */
     public function edit($id)
     {
-        $user = User::find($id);
-
-        $roles = Role::all();
-        return view('admin.users.edit', compact('user','roles'));
+        $barang = Barang::find($id);
+        return view ('admin.barang.edit', compact('barang'));
     }
 
     /**
@@ -99,10 +89,9 @@ class AdminUsersController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UsersEditRequest $request, $id)
+    public function update(barangeditRequest $request, $id)
     {
-        
-        $user = User::findOrFail($id);
+        $barang = Barang::findOrFail($id);
 
         $input = $request->all();
 
@@ -110,7 +99,7 @@ class AdminUsersController extends Controller
 
             $name = time() . $file->getClientOriginalName();
 
-            $file->move('images', $name);
+            $file->move('imagesbarang', $name);
 
             $photo = Photo::create(['file'=>$name]);
 
@@ -118,9 +107,8 @@ class AdminUsersController extends Controller
         }
 
         $input['password'] = bcrypt($request->password);
-        $user->update($input);
-        return redirect('/admin/users');
-
+        $barang->update($input);
+        return redirect('/admin/barangs');
     }
 
     /**
@@ -131,8 +119,8 @@ class AdminUsersController extends Controller
      */
     public function destroy($id)
     {
-        $user = User::find($id);
-     $user->delete($user);
-     return redirect('/admin/users')->with('deleted_user','The user has been deleted');
+        $barang = Barang::find($id);
+        $barang->delete($barang);
+        return redirect('/admin/barangs')->with('deleted_user','Barang berhasil di hapus');
     }
 }

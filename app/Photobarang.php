@@ -4,9 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Photo extends Model
+class Photobarang extends Model
 {
-    protected $uploads = '/images/';
+    protected $uploads = '/imagesbarang/';
 
     protected $fillable = ['file'];
 
